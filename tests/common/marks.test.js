@@ -4,6 +4,24 @@ import { mount } from 'enzyme';
 import Slider, { Range } from '../../src';
 
 describe('marks', () => {
+  let originClientWidth;
+  beforeAll(() => {
+    // Mock offsetHeight
+    originClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth').get;
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+      get() {
+        return 100;
+      },
+    });
+  });
+
+  afterAll(() => {
+    // Restore Mock offsetHeight
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+      get: originClientWidth,
+    });
+  });
+
   it('should render marks correctly when `marks` is not an empty object', () => {
     const marks = { 0: 0, 30: '30', 99: '', 100: '100' };
 
@@ -20,11 +38,10 @@ describe('marks', () => {
     expect(rangeWrapper.find('.rc-slider-mark-text').at(2).instance().innerHTML).toBe('100');
   });
 
-  it.skip('should select correct value while click on marks', () => {
+  it('should select correct value while click on marks', () => {
     const marks = { 0: '0', 30: '30', 100: '100' };
 
     const sliderWrapper = mount(<Slider marks={marks} />);
-    sliderWrapper.node.sliderRef.clientWidth = 100; // jsdom doesn't provide clientWidth
     const sliderMark = sliderWrapper.find('.rc-slider-mark-text').get(1);
     sliderWrapper.simulate('mousedown', {
       type: 'mousedown',
@@ -36,7 +53,6 @@ describe('marks', () => {
     expect(sliderWrapper.state('value')).toBe(30);
 
     const rangeWrapper = mount(<Range marks={marks} />);
-    rangeWrapper.node.sliderRef.clientWidth = 100; // jsdom doesn't provide clientWidth
     const rangeMark = rangeWrapper.find('.rc-slider-mark-text').get(1);
     rangeWrapper.simulate('mousedown', {
       type: 'mousedown',

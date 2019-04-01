@@ -3,6 +3,7 @@ import React from 'react';
 import { render, mount } from 'enzyme';
 import keyCode from 'rc-util/lib/KeyCode';
 import Slider from '../src/Slider';
+import Range from '../src/Range';
 
 describe('Slider', () => {
   it('should render Slider with correct DOM structure', () => {
@@ -98,10 +99,11 @@ describe('Slider', () => {
   });
 
   it('it should work fine when arrow key is pressed', () => {
-    const wrapper = mount(<Slider range defaultValue={[20, 50]} />);
+    const wrapper = mount(<Range defaultValue={[20, 50]} />);
     const handler = wrapper.find('.rc-slider-handle').at(1);
-    
+
     wrapper.simulate('click');
+    wrapper.simulate('focus');
     handler.simulate('keyDown', { keyCode: keyCode.LEFT });
     expect(wrapper.state('value')).toBe(49);
     handler.simulate('keyDown', { keyCode: keyCode.RIGHT });
@@ -142,7 +144,7 @@ describe('Slider', () => {
     expect(wrapper.state('value')).toBe(100);
   });
 
-  describe.only('when component has fixed values', () => {
+  describe('when component has fixed values', () => {
     it('increases the value when key "up" is pressed', () => {
       const wrapper = mount(<Slider min={20} defaultValue={40} marks={{ 20: 20, 40: 40, 100: 100 }} step={null} />);
       const handler = wrapper.find('.rc-slider-handle').at(1);
